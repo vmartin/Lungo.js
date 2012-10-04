@@ -12,7 +12,7 @@
  *                                 |  $$$$$$/
  *                                  \______/
  *
- * @copyright 2011-2012 TapQuo Inc (c)
+ * @copyright 2011 TapQuo Inc (c)
  * @license   http://www.github.com/tapquo/lungo/blob/master/LICENSE.txt
  * @version   1.2
  * @link      https://github.com/TapQuo/Lungo.js
@@ -30,9 +30,7 @@ LUNGO.Data || (LUNGO.Data = {});
 LUNGO.Sugar || (LUNGO.Sugar = {});
 LUNGO.View || (LUNGO.View = {});
 LUNGO.Device || (LUNGO.Device = {});
-LUNGO.ready || (LUNGO.ready = Quo().ready);
-
-/**
+LUNGO.ready || (LUNGO.ready = Quo().ready);/**
  * Object with data-attributes (HTML5) with a special <markup>
  *
  * @namespace LUNGO
@@ -95,9 +93,16 @@ LUNGO.Constants = {
         KEY: 'value',
         PARSER: /\{{.*?\}}/gi
     },
+    
+    SCROLL_TO: {
+        FIRST: 'first',
+        LAST: 'last',
+        NONE: undefined
+    },
 
     ERROR: {
         CREATE_SCROLL: 'ERROR: Impossible to create a <scroll> without ID.',
+        SCROLL_TO: 'ERROR: This "scroll to" value is not included in the list of possible values. [first|last|none]',
         BINDING_DATA_TYPE: 'ERROR: Processing the type of binding data.',
         BINDING_TEMPLATE: 'ERROR: Binding Template not exists >> ',
         BINDING_LIST: 'ERROR: Processing parameters for list binding.',
@@ -107,10 +112,9 @@ LUNGO.Constants = {
     }
 
 };
-
-/**
+/** 
  * Lungo sandbox APP initialization
- *
+ * 
  * @namespace LUNGO
  * @class App
  *
@@ -151,9 +155,7 @@ LUNGO.App = (function(lng, undefined) {
         get: get
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Contains all the common functions used in Lungo.
  *
  * @namespace LUNGO
@@ -374,9 +376,7 @@ LUNGO.Core = (function(lng, $$, undefined) {
         findByProperty: findByProperty
     };
 
-})(LUNGO, Quo);
-
-/**
+})(LUNGO, Quo);/**
  * LungoJS Dom Handler
  *
  * @namespace LUNGO
@@ -396,9 +396,7 @@ LUNGO.Core = (function(lng, $$, undefined) {
 */
 LUNGO.dom = function(selector) {
     return $$(selector);
-};
-
-/**
+};/**
  * External Data & Services Manager
  *
  * @namespace LUNGO
@@ -540,9 +538,7 @@ LUNGO.Service = (function(lng, $$, undefined) {
         Settings: $$.ajaxSettings
     };
 
-})(LUNGO, Quo);
-
-/**
+})(LUNGO, Quo);/**
  * ?
  *
  * @namespace LUNGO
@@ -603,9 +599,7 @@ LUNGO.Fallback = (function(lng, undefined) {
     	positionFixed: positionFixed
     }
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Handles the <sections> and <articles> to show
  *
  * @namespace LUNGO
@@ -720,11 +714,9 @@ LUNGO.Router = (function(lng, undefined) {
         back: back
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/** 
  * Stores the displayed <sections> as a historical.
- *
+ * 
  * @namespace LUNGO.Router
  * @class History
  *
@@ -775,9 +767,7 @@ LUNGO.Router.History = (function(undefined) {
         removeLast: removeLast
     };
 
-})();
-
-/**
+})();/**
  * Initialize the <articles> layout of a certain <section>
  *
  * @namespace LUNGO.View
@@ -864,9 +854,7 @@ LUNGO.View.Article = (function(lng, undefined) {
         showReferenceLinks: showReferenceLinks
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  *
  *
  * @namespace LUNGO.View
@@ -902,9 +890,7 @@ LUNGO.View.Resize = (function(lng, undefined) {
         toolbars: toolbars
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Lungo Template system
  *
  * @namespace LUNGO.View
@@ -998,9 +984,7 @@ LUNGO.View.Template = (function(lng, undefined) {
         markup: markup
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Lungo Data-Binding system
  *
  * @namespace LUNGO.View.Template
@@ -1077,9 +1061,7 @@ LUNGO.View.Template.Binding = (function(lng, undefined) {
         dataAttribute: dataAttribute
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Auto generate lists based on Template and Data-Binding system
  *
  * @namespace LUNGO.View.Template
@@ -1093,6 +1075,7 @@ LUNGO.View.Template.List = (function(lng, undefined) {
 
     var ERROR = lng.Constants.ERROR;
     var ATTRIBUTE = lng.Constants.ATTRIBUTE;
+    var SCROLL_TO = lng.Constants.SCROLL_TO;
 
     /**
      * Create a list based DataBind with a configuration object for an element <article>
@@ -1115,22 +1098,34 @@ LUNGO.View.Template.List = (function(lng, undefined) {
     /**
      * Append a list based DataBind with a configuration object for an element <article>
      * if the config has a 'norecords' property it will display the norecords markup rather than nothing.
+     * if the configuration has property 'scroll_to' this be considered to determine the scroll position
+     * the allowed values for this are "first"|"last"|"none" , if this property is not set the default value
+     * is "last"", if set this property with "none" the scroll position is not set and if set this property
+     * with some value not included in allowed values the scroll postion is default value.
      *
      * @method append
      *
      * @param {object} Id of the container showing the result of databinding
+     *
      */
     var append = function(config) {
         var markup = lng.View.Template.markup(config.template, config.data);
         var container = _getContainer(config.el);
-
+        
+        var scroll_to = _determineScroll(config, ATTRIBUTE.LAST);
+    
         container.append(markup);
-        _scroll(config.el, ATTRIBUTE.LAST);
+        
+        _scroll(config.el, scroll_to);
     };
 
     /**
      * Prepend a list based DataBind with a configuration object for an element <article>
      * if the config has a 'norecords' property it will display the norecords markup rather than nothing.
+     * if the configuration has property 'scroll_to' this be considered to determine the scroll position
+     * the allowed values for this are "first"|"last"|"none" , if this property is not set the default value
+     * is "FIRST"", if set this property with "none" the scroll position is not set and if set this property
+     * with some value not included in allowed values the scroll postion is default value.
      *
      * @method prepend
      *
@@ -1139,10 +1134,28 @@ LUNGO.View.Template.List = (function(lng, undefined) {
     var prepend = function(config) {
         var markup = lng.View.Template.markup(config.template, config.data);
         var container = _getContainer(config.el);
-
+        
+        var scroll_to = _determineScroll(config, ATTRIBUTE.FIRST);
+        
         container.prepend(markup);
-        _scroll(config.el, ATTRIBUTE.FIRST);
+        
+        _scroll(config.el, scroll_to);
     };
+    
+    var _determineScroll = function(config, default_value){
+      var scroll_to = undefined;
+      
+      if (config.scroll_to == undefined){
+        //maintains compatibility with other versions
+        scroll_to = default_value;
+      }else if(config.scroll_to.toUpperCase() in lng.Constants.SCROLL_TO){
+        scroll_to =  lng.Constants.SCROLL_TO[config.scroll_to.toUpperCase()]; 
+      }else{
+        scroll_to = default_value;
+        lng.Core.log(2, ERROR.SCROLL_TO); 
+      };
+      return scroll_to;
+    }
 
     var _validateConfig = function(config) {
         var checked = false;
@@ -1192,7 +1205,6 @@ LUNGO.View.Template.List = (function(lng, undefined) {
     };
 
 })(LUNGO);
-
 /**
  * Wrapper of the third library iScroll
  *
@@ -1412,9 +1424,7 @@ LUNGO.View.Scroll = (function(lng, undefined) {
         last: last
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Initialize the <articles> layout of a certain <section>
  *
  * @namespace LUNGO.View
@@ -1477,9 +1487,7 @@ LUNGO.View.Aside = (function(lng, undefined) {
         hide: hide
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Initialize the <articles> layout of a certain <section>
  *
  * @namespace LUNGO.View
@@ -1565,9 +1573,7 @@ LUNGO.View.Element = (function(lng, undefined) {
         progress: progress
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Object with data-attributes (HTML5) with a special <markup>
  *
  * @namespace LUNGO.Attributes
@@ -1626,9 +1632,7 @@ LUNGO.Attributes.Data = {
         selector: 'header, footer',
         html: '<a href="#back" data-target="section" class="onleft button default"><span class="icon {{value}}"></span></a>'
     }
-};
-
-/**
+};/**
  * Temporary cache system
  *
  * @namespace LUNGO.Data
@@ -1710,9 +1714,7 @@ LUNGO.Data.Cache = (function(lng, undefined) {
         exists: exists
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Wrapper for using WebSql (HTML5 feature)
  *
  * @namespace LUNGO.Data
@@ -1928,9 +1930,7 @@ LUNGO.Data.Sql = (function(lng, undefined) {
         execute: execute
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Wrapper for using LocalStorage & SessionStorage (HTML5 Feature)
  *
  * @namespace LUNGO.Data
@@ -1998,9 +1998,7 @@ LUNGO.Data.Storage = (function(lng, undefined) {
     	persistent: persistent
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Boot for a new LungoJS Application instance
  *
  * @namespace LUNGO
@@ -2022,9 +2020,7 @@ LUNGO.Boot = (function(lng, undefined) {
         lng.Boot.Stats.start();
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Load Resources
  *
  * @namespace LUNGO.Boot
@@ -2121,9 +2117,7 @@ LUNGO.Boot.Resources = (function(lng, $$, undefined) {
         start: start
     };
 
-})(LUNGO, Quo);
-
-/**
+})(LUNGO, Quo);/**
  * Save in LungoJS.com the use of the service for further ranking
  *
  * @namespace LUNGO.Boot
@@ -2163,9 +2157,7 @@ LUNGO.Boot.Stats = (function(lng, undefined) {
         start: start
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Initialize the Layout of LungoJS (if it's a mobile environment)
  *
  * @namespace LUNGO.Boot
@@ -2232,9 +2224,7 @@ LUNGO.Boot.Layout = (function(lng, undefined) {
         start: start
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Initialize the <article> element
  *
  * @namespace LUNGO.Boot
@@ -2294,9 +2284,7 @@ LUNGO.Boot.Article = (function(lng, undefined) {
         start: start
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Make an analysis of Data attributes in HTML elements and creates a <markup>
  * based on each data type.
  *
@@ -2339,9 +2327,7 @@ LUNGO.Boot.Data = (function(lng, undefined) {
         start: start
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Initialize the automatic DOM UI events
  *
  * @namespace LUNGO.Boot
@@ -2460,9 +2446,7 @@ LUNGO.Boot.Events = (function(lng, undefined) {
         start: start
     };
 
-})(LUNGO);
-
-/**
+})(LUNGO);/**
  * Initialize the <section> element
  *
  * @namespace LUNGO.Boot
