@@ -630,7 +630,7 @@ LUNGO.Router = (function(lng, undefined) {
 
         if (_existsTarget(target)) {
             lng.dom(current).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.SHOW).addClass(CLASS.HIDE);
-            lng.dom(target).removeClass(CLASS.SHOW_REVOKE).addClass(CLASS.SHOW).trigger(TRIGGER.LOAD);
+            lng.dom(target).removeClass(CLASS.SHOW_REVOKE).addClass(CLASS.SHOW).removeClass(CLASS.HIDE).trigger(TRIGGER.LOAD);
 
             lng.Router.History.add(section_id);
         }
@@ -714,7 +714,8 @@ LUNGO.Router = (function(lng, undefined) {
         back: back
     };
 
-})(LUNGO);/** 
+})(LUNGO);
+/** 
  * Stores the displayed <sections> as a historical.
  * 
  * @namespace LUNGO.Router

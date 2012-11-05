@@ -120,7 +120,7 @@ FILES_TO_COMPRESS=""
 	for file in "${FILES[@]}"
 	do
 		echo "   - [THEME] "$file
-		cp $DIR"lungo.theme."$file $BUILDPATH'lungo.theme.'$file
+		cp $DIR"Lungo.theme."$file $BUILDPATH'lungo.theme.'$file
 	done
 	echo -e "\033[32m  [BUILD]: lungo-"$VERSION.$MINIFIED".css\033[0m"
 echo ============================ /LUNGO COMPILER ============================
