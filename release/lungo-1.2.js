@@ -2166,18 +2166,20 @@ LUNGO.Boot.Stats = (function(lng, undefined) {
      * @method _saveStatsInLungoJS
      */
     var _saveStats = function() {
-        lng.Service.post( 'http://www.lungojs.com/stats/', {
-            name: lng.App.get('name'),
-            version: lng.App.get('version'),
-            icon: lng.App.get('icon')
-        }, function(response) {});
+
+//        lng.Service.post( 'http://www.lungojs.com/stats/', {
+//            name: lng.App.get('name'),
+//            version: lng.App.get('version'),
+//            icon: lng.App.get('icon')
+//        }, function(response) {});
     };
 
     return {
         start: start
     };
 
-})(LUNGO);/**
+})(LUNGO);
+/**
  * Initialize the Layout of LungoJS (if it's a mobile environment)
  *
  * @namespace LUNGO.Boot
@@ -2491,7 +2493,7 @@ LUNGO.Boot.Section = (function(lng, undefined) {
         var sections = lng.dom(ELEMENT.SECTION);
         _initFirstSection(sections);
         _initAllSections(sections);
-        _hideAllSectionsExceptFirst(sections);
+
         lng.View.Resize.toolbars();
     };
 
