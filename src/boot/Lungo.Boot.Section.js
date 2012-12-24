@@ -23,7 +23,7 @@ LUNGO.Boot.Section = (function(lng, undefined) {
         var sections = lng.dom(ELEMENT.SECTION);
         _initFirstSection(sections);
         _initAllSections(sections);
-
+        _hideAllSectionsExceptFirst(sections);
         lng.View.Resize.toolbars();
     };
 
