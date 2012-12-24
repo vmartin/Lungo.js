@@ -28,10 +28,19 @@ LUNGO.Router = (function(lng, undefined) {
         var target = ELEMENT.SECTION + section_id;
 
         if (_existsTarget(target)) {
+//            lng.dom(current).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.SHOW).addClass(CLASS.HIDE);
+//            lng.dom(target).removeClass(CLASS.SHOW_REVOKE).addClass(CLASS.SHOW).removeClass(CLASS.HIDE).trigger(TRIGGER.LOAD);
+//            lng.Router.History.add(section_id);
+          var environment = lng.Core.environment();
+          if (environment.isMobile && environment.os.name === 'ios'){
             lng.dom(current).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.SHOW).addClass(CLASS.HIDE);
             lng.dom(target).removeClass(CLASS.SHOW_REVOKE).addClass(CLASS.SHOW).removeClass(CLASS.HIDE).trigger(TRIGGER.LOAD);
-
-            lng.Router.History.add(section_id);
+          }else{
+            //es necessari amagar-ho tot amb android...
+            lng.dom(current).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.SHOW_REVOKE).removeClass(CLASS.SHOW).addClass(CLASS.HIDE).removeClass(CLASS.CURRENT);
+            lng.dom(target).removeClass(CLASS.SHOW_REVOKE).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.HIDE).addClass(CLASS.SHOW).trigger(TRIGGER.LOAD);
+          }
+          lng.Router.History.add(section_id);
         }
     };
 
@@ -85,9 +94,19 @@ LUNGO.Router = (function(lng, undefined) {
     var back = function() {
         var current_section = ELEMENT.SECTION + _getHistoryCurrent();
 
-        lng.dom(current_section).removeClass(CLASS.SHOW).addClass(CLASS.SHOW_REVOKE).trigger(TRIGGER.UNLOAD);
-        lng.Router.History.removeLast();
-        lng.dom(_getHistoryCurrent()).removeClass(CLASS.HIDE).addClass(CLASS.HIDE_REVOKE).addClass(CLASS.SHOW);
+//        lng.dom(current_section).removeClass(CLASS.SHOW).addClass(CLASS.SHOW_REVOKE).trigger(TRIGGER.UNLOAD);
+//        lng.Router.History.removeLast();
+//        lng.dom(_getHistoryCurrent()).removeClass(CLASS.HIDE).addClass(CLASS.HIDE_REVOKE).addClass(CLASS.SHOW);
+        var environment = lng.Core.environment();
+        if (environment.isMobile && environment.os.name === 'ios'){
+          lng.dom(current_section).removeClass(CLASS.SHOW).addClass(CLASS.SHOW_REVOKE).trigger(TRIGGER.UNLOAD);
+          lng.Router.History.removeLast();
+          lng.dom(_getHistoryCurrent()).removeClass(CLASS.HIDE).addClass(CLASS.HIDE_REVOKE).addClass(CLASS.SHOW);
+        }else{
+          lng.dom(current_section).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.SHOW_REVOKE).removeClass(CLASS.SHOW).addClass(CLASS.HIDE).trigger(TRIGGER.UNLOAD);
+          lng.Router.History.removeLast();
+          lng.dom(_getHistoryCurrent()).removeClass(CLASS.SHOW_REVOKE).removeClass(CLASS.HIDE_REVOKE).removeClass(CLASS.HIDE).addClass(CLASS.SHOW);        
+        }
     };
 
     var _existsTarget = function(target) {
