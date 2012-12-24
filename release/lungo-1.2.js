@@ -2491,7 +2491,7 @@ LUNGO.Boot.Section = (function(lng, undefined) {
         var sections = lng.dom(ELEMENT.SECTION);
         _initFirstSection(sections);
         _initAllSections(sections);
-
+        _hideAllSectionsExceptFirst(sections);
         lng.View.Resize.toolbars();
     };
 
@@ -2510,6 +2510,20 @@ LUNGO.Boot.Section = (function(lng, undefined) {
             var section = lng.dom(sections[i]);
             _initArticles(section);
         }
+    };
+    
+    //if not is mobile or not is iOS hide sections
+    var _hideAllSectionsExceptFirst = function(sections){
+        var first_section = sections.first();
+        
+        for (var i = 0, len = sections.length; i < len; i++) {
+            var section = lng.dom(sections[i]);
+            if (!environment.isMobile || environment.os.name != 'ios'){
+               if (section.attr("id") != first_section.attr("id")){
+                  section.addClass(CLASS.HIDE);
+               };
+            };
+        };
     };
 
     var _initArticles = function(section) {

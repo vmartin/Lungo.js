@@ -27,11 +27,12 @@ LUNGO.Boot.Stats = (function(lng, undefined) {
      * @method _saveStatsInLungoJS
      */
     var _saveStats = function() {
-        lng.Service.post( 'http://www.lungojs.com/stats/', {
-            name: lng.App.get('name'),
-            version: lng.App.get('version'),
-            icon: lng.App.get('icon')
-        }, function(response) {});
+
+//        lng.Service.post( 'http://www.lungojs.com/stats/', {
+//            name: lng.App.get('name'),
+//            version: lng.App.get('version'),
+//            icon: lng.App.get('icon')
+//        }, function(response) {});
     };
 
     return {
